@@ -77,4 +77,3 @@ PDF generated: network_layer_packet_analysis_normal_5min-legend.pdf
 ## ライセンス
 
 このプロジェクトはMITライセンスのもとで公開されています。詳細はLICENSEファイルをご覧ください。
-```
