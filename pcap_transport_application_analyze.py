@@ -1,10 +1,9 @@
-# pcap_transport_application_analyze.ps1
+# pcap_transport_application_analyze.py
 #   Seiichirou Hiraoka <seiichirou.hiraoka@gmail.com> with ChatGPT 4o
 #     Initial Version: 2024/06/13
 
 import os
 import sys
-import time
 import pyshark
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +12,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from tqdm import tqdm
 import argparse
 from datetime import datetime
+import pytz
 
 # コマンドライン引数の解析
 parser = argparse.ArgumentParser(description='PCAP analysis script.')
@@ -70,26 +70,27 @@ def analyze_pcap(file_path, file_index, total_files, services):
     capture = pyshark.FileCapture(file_path, use_json=True)
     records = []
     packet_count = 0
-    start_time = time.time()
+    start_time = datetime.now()
     
     for packet in tqdm(capture, desc=desc, unit='packets', leave=False):
         try:
             time_epoch = float(packet.sniff_timestamp)
+            time_local = datetime.fromtimestamp(time_epoch)
             src_port = packet[packet.transport_layer].srcport
             dst_port = packet[packet.transport_layer].dstport
             src_port_range = get_port_range(src_port)
             dst_port_range = get_port_range(dst_port)
             protocol = f"{packet.transport_layer}/{src_port_range}" if src_port in services else f"{packet.transport_layer}/{dst_port_range}"
             application = services.get(f"{src_port}/{packet.transport_layer}", services.get(f"{dst_port}/{packet.transport_layer}", "Unknown"))
-            records.append((time_epoch, protocol, application))
+            records.append((time_local, protocol, application))
             packet_count += 1
         except AttributeError:
             continue
 
-    end_time = time.time()
+    end_time = datetime.now()
     capture.close()
     df = pd.DataFrame(records, columns=['timestamp', 'protocol', 'application'])
-    duration = end_time - start_time
+    duration = (end_time - start_time).total_seconds()
     packets_per_sec = packet_count / duration
     tqdm.write(f"{desc}: {packet_count} packets [{duration:.2f}s, {packets_per_sec:.2f} packets/s]")
     return df, packet_count
@@ -113,7 +114,7 @@ pcap_files = [os.path.join(pcap_dir, f) for f in os.listdir(pcap_dir) if f.endsw
 all_data = analyze_multiple_pcaps(pcap_files)
 
 # タイムスタンプをタイムレンジ毎にグループ化
-all_data['time_bin'] = pd.to_datetime(all_data['timestamp'], unit='s').dt.floor(f'{time_interval}T')
+all_data['time_bin'] = pd.to_datetime(all_data['timestamp']).dt.floor(f'{time_interval}T')
 grouped_data = all_data.groupby(['time_bin', 'protocol']).size().unstack(fill_value=0)
 
 # プロトコル名を正規化する関数
@@ -176,4 +177,3 @@ with PdfPages(pdf_output) as pdf:
     plt.close(fig)
 
 print(f"PDF report has been generated: {pdf_output}")
-
