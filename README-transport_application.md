@@ -71,12 +71,12 @@ $ python3 pcap_network_analyze.py --interval 10 --legend
 Time range interval: 10 minutes
 Analysis target directory: pcap
 Legend: Enabled
-Processing file 1/6: ASA_00830_20240612114553.pcap: 3617 packets [00:04, 894.34 packets/s]
-Processing file 2/6: ASA_00831_20240612115553.pcap: 4737 packets [00:05, 855.18 packets/s]
-Processing file 3/6: ASA_00832_20240612120553.pcap: 3290 packets [00:03, 876.68 packets/s]
-Processing file 4/6: ASA_00833_20240612121553.pcap: 7612 packets [00:08, 942.08 packets/s]
-Processing file 5/6: ASA_00836_20240612124553.pcap: 8798 packets [00:11, 747.91 packets/s]
-Processing file 6/6: ASA_00837_20240612125554.pcap: 5789 packets [00:06, 851.84 packets/s]
+Processing file 1/6: 1.pcap: 3617 packets [00:04, 894.34 packets/s]
+Processing file 2/6: 2.pcap: 4737 packets [00:05, 855.18 packets/s]
+Processing file 3/6: 3.pcap: 3290 packets [00:03, 876.68 packets/s]
+Processing file 4/6: 4.pcap: 7612 packets [00:08, 942.08 packets/s]
+Processing file 5/6: 5.pcap: 8798 packets [00:11, 747.91 packets/s]
+Processing file 6/6: 6.pcap: 5789 packets [00:06, 851.84 packets/s]
 Total packets: 33843
 PDF generated: transport_application_protocol_analyze_pcap-10min-legend.pdf
 ```
